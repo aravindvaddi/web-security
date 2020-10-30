@@ -1,0 +1,54 @@
+IMPLEMENTATION
+
+For the database encryption, I used the "django-cryptography" plugin.
+This involves using the API method to encrypt sensitive fields in the database.
+
+Every column that was not a primary key or a foreign key or was being used to filter was encrypted
+Encrypting columns that are used for filtering in views.py was breaking the site.
+
+The encrypted fields are
+
+In LegacySite_product
+product_name
+product_image_path
+recommended_price
+description
+
+In LegacySite_card
+amount
+fp
+
+Encrypting a field is done as shown below
+
+# import the required function
+from django_cryptography.fields import encrypt
+
+# encrypt the required field
+product_name = encrypt(models.CharField(max_length=50, unique=True))
+
+
+KEY MANAGEMENT
+
+I decided to manage the key by storing in the memory and loading it as an environment variable.
+This keeps it outside the git tree and allows the site administrator flexibility to store keys securely.
+In addition to that, this allows us to test effectively since we can populate environment variable similarly without having to change the source code and also allows us the flexibility to choose a different key for testing.
+
+This is done using the django-environ
+
+We store our key in a .env file that is in the same location as settings.py but is not part of the git tree.
+We must add .env to our .gitignore to make sure it isn't commited.
+
+To use django-environ, we do the following
+
+import environ
+
+# initialize
+env = environ.Env()
+# reading .env file
+environ.Env.read_env()
+# read the secret key in runtime
+SECRET_KEY = env("SECRET_KEY")
+
+Our .env file would look something like
+
+SECRET_KEY='<secret-key>'
