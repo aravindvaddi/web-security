@@ -1,0 +1,4 @@
+django
+cryptography
+django-environ
+django-cryptography

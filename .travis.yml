@@ -1,0 +1,5 @@
+language: python
+install:
+	pip install -r requirements.txt
+
+script: echo "SECRET_KEY='kmgysa#fz+9(z1*=c0ydrjizk*7sthm2ga1z4=^61$cxcq8b$l'" > GiftcardSite/.env && python manage.py test LegacySite/
