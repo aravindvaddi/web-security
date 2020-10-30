@@ -1,0 +1,69 @@
+XSS attack
+
+item-single.html contains a bug on line 62 which exposes out application to xss vulnerability.
+
+Bug Code:
+<p>Endorsed by {{director|safe}}!</p>
+The code mistakenly identifies director to be a safe string, that is, a string that doesn't need to be sanitised. This lets an attacker use XSS as shown in xss.txt file.
+item-single.html is returned when the buy_card_view is called with a get request.
+
+Payload:
+http://127.0.0.1:8000/buy.html?director=<script>alert('okay, you need to fix this')</script>
+
+Fix:
+remove the safe tag from line 62. This encodes the xss payload rendering it invulnerable.
+
+
+CSRF attack
+
+csrf attack traditionally works when an attacker is able to send cross site requests to the vulnerable site by piggybacking on the victims active session.
+This is due to lack of csrf tokens being sent with every request that performs a sensitive action.
+
+csrfattack.html exploits this by gifting a card to the attacker.
+
+Due to the default SameSite cookies setting being turned on to Lax by Chrome and many other modern browsers, this attack is rendered ineffective as the sessionid cookie isn't sent along with most cross site requests.
+
+Bug Code:
+Lack of csrf validation in the form sending post requests that gifts a card
+
+Payload:
+csrfattack.html
+
+Fix:
+Use the csrf_protect decorator on the gift_card_view in views.py (line 113) and add the {% csrf_token %} in the vulnerable form in gift.html (line 78)
+
+
+SQL Injection
+
+sqlinjection works when the attack is able to manipulate the query run in the backend due to the input not being handled securely.
+
+Bug Code:
+the line "card_query = Card.objects.raw('select id from LegacySite_card where data = \'%s\'' % signature)" in use_card_view in views.py doesn't securely handle the signature value which can be manipulated by an attacker using a custom gift card
+
+Payload:
+sqlipayload.gftcrd
+
+Fix:
+Use parameterized query instead of raw query that doesn't validate input data. This is done as shown below
+card_query = Card.objects.raw('select id from LegacySite_card where data = %s', [signature])
+
+
+Password Breaking
+
+Bug Code:
+the generate_salt function in extras.py has a bug that causes the same salt to be used for every Password
+
+Exploit:
+Once we get the admin password using sqli, we can create a couple of accounts and extract their hashed passwords as well using the same method.
+We can extract the value of the salt from these passwords as the first few characters are the same.
+
+we can then run crack.py which hashes passwords from a preexisting data set to try and break the admin password which turned out to be 'adminpassword'
+
+the password dataset used can be found at 'https://crackstation.net/files/crackstation.txt.gz'
+
+Fix:
+we can fix this by not using the same seed over and over again. This can be achived by moving "import random" outside the generate_salt function and removing below lines
+SEED = settings.RANDOM_SEED
+random.seed(SEED)
+
+This works since random uses urandom to create random seeds each time and is better than using a stored static seed. 

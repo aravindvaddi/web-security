@@ -3,14 +3,12 @@ from binascii import hexlify
 from hashlib import sha256
 from django.conf import settings
 from os import urandom, system
+import random
 
-SEED = settings.RANDOM_SEED
 CARD_PARSER = 'giftcardreader'
 
 # KG: Something seems fishy here. Why are we seeding here?
 def generate_salt(length, debug=True):
-    import random
-    random.seed(SEED)
     return hexlify(random.randint(0, 2**length-1).to_bytes(length, byteorder='big'))
 
 def hash_pword(salt, pword):
