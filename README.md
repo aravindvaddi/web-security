@@ -8,6 +8,8 @@
 * Perform one attack that exploits a `Cross-site request forgery (CSRF)` vulnerability
 * Perform one attack that exploits an `SQL injection` vulnerability
 * Break a salted password using a dictionary and retrive the original password
+* Fix the vulnerabilities
+* Use `Travis CI` to perform regression tests
 * Write a bugs.txt explaining the bug code, payload used to exploit it and the fix.
 
 ### Database encryption ([Part 2](https://github.com/aravindvaddi/web-security/tree/master/part2))
